@@ -21,6 +21,7 @@
         <div class="py-4">
             <h1>Large Format Reprint Queue</h1>
             <h2>Aim away from face</h2>
+            <hr>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Request a Reprint
@@ -84,8 +85,8 @@
             </div>
         </div>
 
-    </div>
 
+    </div>
     <div class="container-sm" id="reprint-stack">
         <h2>Reprint Stack</h2>
         <div class="input-group">
@@ -187,6 +188,7 @@
             let reason = document.getElementById("reason").value;
             let qtyNeeded = document.getElementById("item-quantity-needed").value;
             let qtyTotal = document.getElementById("item-quantity-total").value;
+            let size = document.getElementById("item-size").value;
             let timestamp = Date.now();
 
             addDoc(collection(db, "reprints"), {
@@ -194,11 +196,12 @@
                     orderId: orderId,
                     itemId: itemId,
                     reason: reason,
+                    size: size,
                     created: timestamp,
                     status: "requested",
                     qtyNeeded: qtyNeeded,
                     qtytotal: qtyTotal,
-                    updated: ["first"]
+                    updated: []
                 }).then(() => {
                     reprintStackUpdate();
                 }
