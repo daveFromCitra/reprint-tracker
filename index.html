@@ -15,104 +15,115 @@
 </head>
 
 <body>
-    <div class="container-sm" id="main-card-area">
-        <div class="py-4">
-            <h1>Large Format Reprint Queue</h1>
-            <h3>(Aim away from face)</h3>
-            <hr>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Request a Reprint
-            </button>
-        </div>
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Reprint Request</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3" id="reprint-form">
-                            <label class="form-label" for="">User Name</label>
-                            <input class="form-control" type="text" id="user-name">
-                            <br>
-                            <div class="row">
-                                <div class="col">
-                                    <label class="form-label" for="">Order Number</label>
-                                    <input class="form-control" type="text" id="order-number">
-                                </div>
-                                <div class="col">
-                                    <label class="form-label" for="">Sku</label>
-                                    <input class="form-control" type="text" id="item-number">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col">
-                                    <label class="form-label" for="">Quantity Needed</label>
-                                    <input class="form-control" type="text" id="item-quantity-needed">
-                                </div>
-                                <div class="col">
-                                    <label class="form-label" for="">Quantity Total</label>
-                                    <input class="form-control" type="text" id="item-quantity-total">
-                                </div>
-                            </div>
-                            <br>
-                            <label class="form-label" for="">Size</label>
-                            <input class="form-control" type="text" id="item-size">
-                            <br>
-
-                            <label class="form-label" for="">Reason</label>
-                            <input class="form-control" type="text" id="reason" list="reasonOptions">
-                            <datalist id="reasonOptions">
-                                <option value="Laminate issue">
-                                <option value="Missing quantity">
-                                <option value="Print issue">
-                                <option value="Cut issue">
-                            </datalist>
+    <div class="container-sm">
+        <section id="logged-out" class="py-4">
+            <h1>You there? Identify yourself!</h1>
+            <button class="btn btn-success" id="login-btn">Log In</button>
+        </section>
+    </div>
+    <section id="logged-in" style="display: none;">
+        <div class="container-sm" id="main-card-area">
+            <button class="btn btn-success mt-4" id="logout-btn">Log Out</button>
+            <div class="py-4">
+                <h1>Large Format Reprint Queue</h1>
+                <h3>(Aim away from face)</h3>
+                <hr>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    Request a Reprint
+                </button>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Reprint Request</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div id="form-alert-zone">
+                        <div class="modal-body">
+                            <div class="mb-3" id="reprint-form">
+                                <label class="form-label" for="">User Name</label>
+                                <input class="form-control" type="text" id="user-name">
+                                <br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="form-label" for="">Order Number</label>
+                                        <input class="form-control" type="text" id="order-number">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label" for="">Sku</label>
+                                        <input class="form-control" type="text" id="item-number">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="form-label" for="">Quantity Needed</label>
+                                        <input class="form-control" type="text" id="item-quantity-needed">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label" for="">Quantity Total</label>
+                                        <input class="form-control" type="text" id="item-quantity-total">
+                                    </div>
+                                </div>
+                                <br>
+                                <label class="form-label" for="">Size</label>
+                                <input class="form-control" type="text" id="item-size">
+                                <br>
 
+                                <label class="form-label" for="">Reason</label>
+                                <input class="form-control" type="text" id="reason" list="reasonOptions">
+                                <datalist id="reasonOptions">
+                                    <option value="Laminate issue">
+                                    <option value="Missing quantity">
+                                    <option value="Print issue">
+                                    <option value="Cut issue">
+                                </datalist>
+                            </div>
+                            <div id="form-alert-zone">
+
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" id="main-submit">Submit</button>
-                        <button class="btn btn-primary" id="main-check">Check</button>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" id="main-check">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
+        <div class="container-sm" id="reprint-stack">
+            <h2>Reprint Stack</h2>
+            <div class="input-group">
+                <button class="btn btn-success" id="main-update">Update</button>
+                <select id="updateCommand" class="form-select" aria-label="Default select example">
+                    <option selected>Select status for update...</option>
+                    <option value="requested">Requested</option>
+                    <option value="pulled">Pulled</option>
+                    <option value="printed">Printed</option>
+                    <option value="complete">Complete</option>
+                    <option value="deleted">Delete</option>
+                </select>
+                <button id="refresh-button" class="btn">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+            <table id="reprint-stack-list" class="table">
 
-
-    </div>
-    <div class="container-sm" id="reprint-stack">
-        <h2>Reprint Stack</h2>
-        <div class="input-group">
-            <button class="btn btn-success" id="main-update">Update</button>
-            <select id="updateCommand" class="form-select" aria-label="Default select example">
-                <option selected>Select status for update...</option>
-                <option value="requested">Requested</option>
-                <option value="pulled">Pulled</option>
-                <option value="printed">Printed</option>
-                <option value="complete">Complete</option>
-                <option value="deleted">Delete</option>
-            </select>
-            <button id="refresh-button" class="btn">
-                <i class="bi bi-arrow-clockwise"></i>
-            </button>
+            </table>
         </div>
-        <table id="reprint-stack-list" class="table">
-
-        </table>
-    </div>
+    </section>
 
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, getDoc, setDoc, doc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js";
       
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -128,13 +139,51 @@
         const app = initializeApp(firebaseConfig);
           // Init Database
         const db = getFirestore();
+        // Init Auth
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        function logIn() {
+            signInWithPopup(auth, provider)
+            .then((result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                // ...
+            }).catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                // ...
+            });
+        }
+
+        function logOut() {
+            auth.signOut()
+        }
+
+        auth.onAuthStateChanged(user => {
+            const loggedIn = document.getElementById("logged-in");
+            const loggedOut = document.getElementById("logged-out");
+
+            if (user) {
+                console.log(user);
+                loggedOut.style.display = 'none'
+                loggedIn.style.display = 'block'
+                reprintStackUpdate();
+            } else {
+                loggedOut.style.display = 'block'
+                loggedIn.style.display = 'none'
+            }
+        }) 
 
         // Button Event Listeners
-        // Submit
-        document.getElementById("main-submit").addEventListener("click", function(e) {
-            e.preventDefault();
-            submitReprint();
-        })
         // Check
         document.getElementById("main-check").addEventListener("click", function(e) {
             e.preventDefault();
@@ -149,7 +198,16 @@
         document.getElementById("refresh-button").addEventListener("click", function(e) {
             e.preventDefault();
             reprintStackUpdate();
-            //logUpdate("4VXpsO2KDk1QLIol8kY2", "thing");
+        })
+        // Log In Button
+        document.getElementById("login-btn").addEventListener("click", function(e) {
+            e.preventDefault();
+            logIn();
+        })
+        // Log Out Button
+        document.getElementById("logout-btn").addEventListener("click", function(e) {
+            e.preventDefault();
+            logOut();
         })
 
 
@@ -200,6 +258,7 @@
                 if (isChecked) {
                     setDoc(refIdDoc, { status: updateCommand }, { merge: true })
                     .then(() => {
+                        logUpdate(refId, updateCommand);
                         reprintStackUpdate();
                     })
                 } else {}
@@ -211,7 +270,12 @@
             let logEntry = {"action": action, "time": Date.now()}
             // TODO: add event logger
             getDoc(doc(db, "reprints", refId))
-            .then((doc) => console.log(doc.data()))
+            .then((docLog) => {
+                console.log(docLog.data().updated);
+                let updateLog = docLog.data().updated
+                updateLog.push(logEntry);
+                setDoc(doc(db, 'reprints', refId), { updated: updateLog }, { merge: true })
+            })
             
             // pull the update log
             
@@ -291,7 +355,6 @@
                 stackListContainer.innerHTML = currentStack;
             })
         }
-        reprintStackUpdate();
       </script>
 </body>
 
