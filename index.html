@@ -98,7 +98,7 @@
                 <option value="complete">Complete</option>
                 <option value="deleted">Delete</option>
             </select>
-            <button class="btn">
+            <button id="refresh-button" class="btn">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
         </div>
@@ -139,6 +139,10 @@
         document.getElementById("main-update").addEventListener("click", function(e) {
             e.preventDefault();
             updateItem();
+        })
+        document.getElementById("refresh-button").addEventListener("click", function(e) {
+            e.preventDefault();
+            reprintStackUpdate();
         })
 
         function checkPrint() {
