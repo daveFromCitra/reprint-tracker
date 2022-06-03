@@ -6,8 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Citra Large Format Reprints</title>
-    <link rel="stylesheet" href="./style.css">
-    <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
@@ -20,7 +18,7 @@
     <div class="container-sm" id="main-card-area">
         <div class="py-4">
             <h1>Large Format Reprint Queue</h1>
-            <h2>Aim away from face</h2>
+            <h3>(Aim away from face)</h3>
             <hr>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -74,6 +72,8 @@
                                 <option value="Print issue">
                                 <option value="Cut issue">
                             </datalist>
+                        </div>
+                        <div id="form-alert-zone">
 
                         </div>
                     </div>
@@ -112,7 +112,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, getDoc, setDoc, doc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
       
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -129,33 +129,59 @@
           // Init Database
         const db = getFirestore();
 
+        // Button Event Listeners
+        // Submit
         document.getElementById("main-submit").addEventListener("click", function(e) {
             e.preventDefault();
             submitReprint();
         })
+        // Check
         document.getElementById("main-check").addEventListener("click", function(e) {
             e.preventDefault();
             checkPrint();
         })
+        // Command Update
         document.getElementById("main-update").addEventListener("click", function(e) {
             e.preventDefault();
             updateItem();
         })
+        // Table Refresh
         document.getElementById("refresh-button").addEventListener("click", function(e) {
             e.preventDefault();
             reprintStackUpdate();
+            //logUpdate("4VXpsO2KDk1QLIol8kY2", "thing");
         })
 
+
         function checkPrint() {
+            const alertZone = document.getElementById("form-alert-zone")
+            const alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Woah now!</strong> Looks like that one has already been marked for reprint. Sure you wanna reprint that
+                                partner?<br>
+                                <button id="check-submit" class="btn btn-danger mt-3" data-bs-dismiss="alert">I'm sure</button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>`
+            
+
+            
             let orderId = document.getElementById("order-number").value;
-            let q = query(collection(db, "reprints"), where("orderId", "==", orderId));
+            let itemId = document.getElementById("item-number").value;
+
+            let q = query(collection(db, "reprints"), where("orderId", "==", orderId), where("itemId", "==", itemId));
             getDocs(q)
             .then((docs) => {
                 if (docs.docs.length > 0) {
-                    alert("This one already exists mate")
-                } 
+                    alertZone.innerHTML = alert;
+                    document.getElementById("check-submit").addEventListener("click", function(e) {
+                        e.preventDefault();
+                        submitReprint();
+                    })
+                } else {
+                    submitReprint()
+                }
                 //docs.docs.map( console.log(this._document.data.value.mapValue) );
-                docs.docs.map( (item) => { console.log(item) });
+                docs.docs.map( (item) => { console.log(item.data()) });
 
             })
             .catch((error) => {
@@ -181,7 +207,18 @@
             
         }
 
+        function logUpdate(refId, action) {
+            let logEntry = {"action": action, "time": Date.now()}
+            // TODO: add event logger
+            getDoc(doc(db, "reprints", refId))
+            .then((doc) => console.log(doc.data()))
+            
+            // pull the update log
+            
+        }
+
         function submitReprint() {
+            console.log("Button Works");
             let username = document.getElementById("user-name").value;
             let orderId = document.getElementById("order-number").value;
             let itemId = document.getElementById("item-number").value;
@@ -220,11 +257,12 @@
             .then((docs) => {
                 docs.forEach(reprint => {
                     try {
-                        let itemId = reprint._document.data.value.mapValue.fields.itemId.stringValue;
-                        let name = reprint._document.data.value.mapValue.fields.name.stringValue;
-                        let orderId = reprint._document.data.value.mapValue.fields.orderId.stringValue;
-                        let reason = reprint._document.data.value.mapValue.fields.reason.stringValue;
-                        let status = reprint._document.data.value.mapValue.fields.status.stringValue;
+                        let reprintData = reprint.data()
+                        let itemId = reprintData.itemId;
+                        let name = reprintData.name;
+                        let orderId = reprintData.orderId;
+                        let reason = reprintData.reason;
+                        let status = reprintData.status;
                         let refId = reprint.id
                         let rowStyle = 'secondary';
                         switch (status) {
@@ -244,7 +282,7 @@
                                 rowStyle = 'danger'
                                 break;
                         }
-                        let listItem = `<tr  data-ref-id="${refId}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td>${orderId}</td><td>${itemId}</td><td>${name}</td><td>${reason}</td><td>${status}</td></tr>`
+                        let listItem = `<tr data-ref-id="${refId}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td>${orderId}</td><td>${itemId}</td><td>${name}</td><td>${reason}</td><td>${status}</td></tr>`
                         currentStack = currentStack + listItem;
                     } catch (error) {
                         console.error(error);
