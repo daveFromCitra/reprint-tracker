@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citra Large Format Reprints</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+    <div class="container-sm" id="main-card-area">
+        <div class="py-4">
+            <h1>Large Format Reprint Queue</h1>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Request a Reprint
+            </button>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reprint Request</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3" id="reprint-form">
+                            <label class="form-label" for="">User Name</label>
+                            <input class="form-control" type="text" id="user-name">
+                            <br>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="">Order Number</label>
+                                    <input class="form-control" type="text" id="order-number">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" for="">Sku</label>
+                                    <input class="form-control" type="text" id="item-number">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="">Quantity Needed</label>
+                                    <input class="form-control" type="text" id="item-quantity-needed">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" for="">Quantity Total</label>
+                                    <input class="form-control" type="text" id="item-quantity-total">
+                                </div>
+                            </div>
+                            <br>
+                            <label class="form-label" for="">Size</label>
+                            <input class="form-control" type="text" id="item-size">
+                            <br>
+
+                            <label class="form-label" for="">Reason</label>
+                            <input class="form-control" type="text" id="reason" list="reasonOptions">
+                            <datalist id="reasonOptions">
+                                <option value="Laminate issue">
+                                <option value="Missing quantity">
+                                <option value="Print issue">
+                                <option value="Cut issue">
+                            </datalist>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="main-submit">Submit</button>
+                        <button class="btn btn-primary" id="main-check">Check</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-sm" id="reprint-stack">
+        <h2>Reprint Stack</h2>
+        <div class="input-group">
+            <button class="btn btn-success" id="main-update">Update</button>
+            <select id="updateCommand" class="form-select" aria-label="Default select example">
+                <option selected>Select status for update...</option>
+                <option value="requested">Requested</option>
+                <option value="pulled">Pulled</option>
+                <option value="printed">Printed</option>
+                <option value="complete">Complete</option>
+                <option value="deleted">Delete</option>
+            </select>
+        </div>
+        <table id="reprint-stack-list" class="table">
+
+        </table>
+    </div>
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, setDoc, doc, arrayUnion, updateDoc } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js";
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCjy8BWbKT_X5CXiemBrDsY21gd59aN5EI",
+          authDomain: "citralargeformatreprints.firebaseapp.com",
+          projectId: "citralargeformatreprints",
+          storageBucket: "citralargeformatreprints.appspot.com",
+          messagingSenderId: "674108428983",
+          appId: "1:674108428983:web:ffb133bef2454d7caf7332"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+          // Init Database
+        const db = getFirestore();
+
+        document.getElementById("main-submit").addEventListener("click", function(e) {
+            e.preventDefault();
+            submitReprint();
+        })
+        document.getElementById("main-check").addEventListener("click", function(e) {
+            e.preventDefault();
+            checkPrint();
+        })
+        document.getElementById("main-update").addEventListener("click", function(e) {
+            e.preventDefault();
+            updateItem();
+        })
+
+        function checkPrint() {
+            let orderId = document.getElementById("order-number").value;
+            let q = query(collection(db, "reprints"), where("orderId", "==", orderId));
+            getDocs(q)
+            .then((docs) => {
+                if (docs.docs.length > 0) {
+                    alert("This one already exists mate")
+                } 
+                //docs.docs.map( console.log(this._document.data.value.mapValue) );
+                docs.docs.map( (item) => { console.log(item) });
+
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+        }
+
+        function updateItem() {
+            const updateCommand = document.getElementById("updateCommand").value
+            const itemList = document.getElementById("reprint-stack-list")
+            const itemArray = itemList.querySelectorAll(".reprint-item")
+            itemArray.forEach(item => {
+                let refId = item.dataset.refId
+                let refIdDoc = doc(db, 'reprints', refId);
+                let isChecked = item.children[0].children[0].checked
+                if (isChecked) {
+                    setDoc(refIdDoc, { status: updateCommand }, { merge: true })
+                    .then(() => {
+                        reprintStackUpdate();
+                    })
+                } else {}
+            });
+            
+        }
+
+        function submitReprint() {
+            let username = document.getElementById("user-name").value;
+            let orderId = document.getElementById("order-number").value;
+            let itemId = document.getElementById("item-number").value;
+            let reason = document.getElementById("reason").value;
+            let qtyNeeded = document.getElementById("item-quantity-needed").value;
+            let qtyTotal = document.getElementById("item-quantity-total").value;
+            let timestamp = Date.now();
+
+            addDoc(collection(db, "reprints"), {
+                    name: username,
+                    orderId: orderId,
+                    itemId: itemId,
+                    reason: reason,
+                    created: timestamp,
+                    status: "requested",
+                    qtyNeeded: qtyNeeded,
+                    qtytotal: qtyTotal,
+                    updated: ["first"]
+                }).then(() => {
+                    reprintStackUpdate();
+                }
+                )
+                .catch((error) => {
+                    console.error(error);
+                })
+        }
+
+        function reprintStackUpdate() {
+            const stackListContainer = document.getElementById("reprint-stack-list");
+            
+            let currentStack = '<tr><th>#</th><th>Order</th><th>Sku</th><th>Submitter Name</th><th>Reason</th><th>Status</th></tr>';
+            let q = query(collection(db, "reprints"), where("status", "!=", "cancelled"));
+            getDocs(q)
+            .then((docs) => {
+                docs.forEach(reprint => {
+                    try {
+                        let itemId = reprint._document.data.value.mapValue.fields.itemId.stringValue;
+                        let name = reprint._document.data.value.mapValue.fields.name.stringValue;
+                        let orderId = reprint._document.data.value.mapValue.fields.orderId.stringValue;
+                        let reason = reprint._document.data.value.mapValue.fields.reason.stringValue;
+                        let status = reprint._document.data.value.mapValue.fields.status.stringValue;
+                        let refId = reprint.id
+                        let rowStyle = 'secondary';
+                        switch (status) {
+                            case 'complete':
+                                rowStyle = 'success'
+                                break;
+                            case 'requested':
+                                rowStyle = 'warning'
+                                break;
+                            case 'pulled':
+                                rowStyle = 'info'
+                                break;
+                            case 'printed':
+                                rowStyle = 'primary'
+                                break;
+                            case 'deleted':
+                                rowStyle = 'danger'
+                                break;
+                        }
+                        let listItem = `<tr  data-ref-id="${refId}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td>${orderId}</td><td>${itemId}</td><td>${name}</td><td>${reason}</td><td>${status}</td></tr>`
+                        currentStack = currentStack + listItem;
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }); 
+                stackListContainer.innerHTML = currentStack;
+            })
+        }
+        reprintStackUpdate();
+      </script>
+</body>
+
+</html>
