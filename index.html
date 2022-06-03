@@ -15,15 +15,34 @@
 </head>
 
 <body>
-    <div class="container-sm">
-        <section id="logged-out" class="py-4">
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">DPG Reprint Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="login-btn">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="logout-btn">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="logged-out" class="py-4">
+        <div class="container-sm">
             <h1>You there? Identify yourself!</h1>
-            <button class="btn btn-success" id="login-btn">Log In</button>
-        </section>
-    </div>
+        </div>
+    </section>
     <section id="logged-in" style="display: none;">
         <div class="container-sm" id="main-card-area">
-            <button class="btn btn-success mt-4" id="logout-btn">Log Out</button>
             <div class="py-4">
                 <h1>Large Format Reprint Queue</h1>
                 <h3>(Aim away from face)</h3>
@@ -171,15 +190,23 @@
         auth.onAuthStateChanged(user => {
             const loggedIn = document.getElementById("logged-in");
             const loggedOut = document.getElementById("logged-out");
+            const logInBtn = document.getElementById("login-btn");
+            const logOutBtn = document.getElementById("logout-btn"); 
 
             if (user) {
                 console.log(user);
                 loggedOut.style.display = 'none'
                 loggedIn.style.display = 'block'
+                logInBtn.classList.add("disabled")
+                logOutBtn.classList.remove("disabled")
+
                 reprintStackUpdate();
+
             } else {
                 loggedOut.style.display = 'block'
                 loggedIn.style.display = 'none'
+                logInBtn.classList.remove("disabled")
+                logOutBtn.classList.add("disabled")
             }
         }) 
 
