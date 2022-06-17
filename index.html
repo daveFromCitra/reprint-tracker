@@ -120,6 +120,28 @@
         </div>
         <div class="container-sm" id="reprint-stack">
             <h2>Reprint Stack</h2>
+            <div class="my-2">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="requestedCheckbox" value="requested" checked>
+                    <label class="form-check-label" for="inlineCheckbox1">Requested</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="pulledCheckbox" value="pulled" checked>
+                    <label class="form-check-label" for="inlineCheckbox2">Pulled</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="printedCheckbox" value="printed" checked>
+                    <label class="form-check-label" for="inlineCheckbox2">Printed</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="completeCheckbox" value="complete">
+                    <label class="form-check-label" for="inlineCheckbox2">Complete</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="deletedCheckbox" value="deleted">
+                    <label class="form-check-label" for="inlineCheckbox2">Delete</label>
+                </div>
+            </div>
             <div class="input-group">
                 <button class="btn btn-success" id="main-update">Update</button>
                 <select id="updateCommand" class="form-select" aria-label="Default select example">
@@ -314,6 +336,7 @@
             // pull the update log
             
         }
+
         function submitReprint() {
             console.log("Button Works");
             let username = document.getElementById("user-name").value;
@@ -353,12 +376,23 @@
                 })
         }
 
+        function statusCheckboxes() {
+            let checkedBoxes = [];
+            document.getElementById("requestedCheckbox").checked && (checkedBoxes.push("requested"))
+            document.getElementById("pulledCheckbox").checked && (checkedBoxes.push("pulled"))
+            document.getElementById("printedCheckbox").checked && (checkedBoxes.push("printed"))
+            document.getElementById("completeCheckbox").checked && (checkedBoxes.push("complete"))
+            document.getElementById("deletedCheckbox").checked && (checkedBoxes.push("deleted"))
+            return checkedBoxes
+        }
+
         function reprintStackUpdate() {
             const stackListContainer = document.getElementById("reprint-stack-list");
-            
+
             let currentStack = '<tr><th>#</th><th>Order</th><th>Sku</th><th>Submitter Name</th><th>Reason</th><th>Status</th></tr>';
-            let q = query(collection(db, "reprints"), where("status", "!=", "cancelled"));
-            getDocs(q)
+            let q = query(collection(db, "reprints"), where("status", "!=", ""));
+            let multi = query(collection(db, "reprints"), where("status", "in", statusCheckboxes()))
+            getDocs(multi)
             .then((docs) => {
                 docs.forEach(reprint => {
                     try {
@@ -387,7 +421,7 @@
                                 rowStyle = 'danger'
                                 break;
                         }
-                        let listItem = `<tr data-ref-id="${refId}" class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td>${orderId}</td><td>${itemId}</td><td>${name}</td><td>${reason}</td><td>${status}</td></tr>`
+                        let listItem = `<tr data-ref-id="${refId}" data-item-status=${status} class="reprint-item table-${rowStyle}"><td><input class="form-check-input" type="checkbox" value="" ></td><td>${orderId}</td><td>${itemId}</td><td>${name}</td><td>${reason}</td><td>${status}</td></tr>`
                         currentStack = currentStack + listItem;
                     } catch (error) {
                         console.error(error);
