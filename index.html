@@ -14,6 +14,7 @@
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="./script.js" defer></script>
 </head>
 
 <body>
@@ -48,7 +49,7 @@
         <div class="container-sm" id="main-card-area">
             <div class="py-4">
                 <h1>Large Format Reprint Queue</h1>
-                <h3>(Aim away from face)</h3>
+                <h4 id="alt-subtitle">(Aim away from face)</h4>
                 <hr>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
@@ -271,7 +272,7 @@
             logOut();
         })
 
-
+        // Check if the reprint has already been requested
         function checkPrint() {
             const alertZone = document.getElementById("form-alert-zone")
             const alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -308,6 +309,7 @@
             })
         }
 
+        // Update the status of a line item
         function updateItem() {
             const updateCommand = document.getElementById("updateCommand").value
             const itemList = document.getElementById("reprint-stack-list")
@@ -327,12 +329,11 @@
             
         }
 
+        // Log any update to the line item status
         function logUpdate(refId, action) {
             let logEntry = {"action": action, "time": Date.now()}
-            // TODO: add event logger
             getDoc(doc(db, "reprints", refId))
             .then((docLog) => {
-                console.log(docLog.data().updated);
                 let updateLog = docLog.data().updated
                 updateLog.push(logEntry);
                 setDoc(doc(db, 'reprints', refId), { updated: updateLog }, { merge: true })
@@ -342,8 +343,8 @@
             
         }
 
+        // The reprint has been added to the queue 
         function submitReprint() {
-            console.log("Button Works");
             let username = document.getElementById("user-name").value;
             let orderId = document.getElementById("order-number").value;
             let itemId = document.getElementById("item-number").value;
@@ -381,6 +382,7 @@
                 })
         }
 
+        // Checks the status filters, to see what the user wants to view
         function statusCheckboxes() {
             let checkedBoxes = [];
             document.getElementById("requestedCheckbox").checked && (checkedBoxes.push("requested"))
@@ -391,12 +393,18 @@
             return checkedBoxes
         }
 
+        // Updates the reprint list
         function reprintStackUpdate() {
+            // Identifies the stack list container
             const stackListContainer = document.getElementById("reprint-stack-list");
+            // Generates the header row for the stacklist
             let currentStack = '<tr><th>#</th><th>Order</th><th>Sku</th><th>Submitter Name</th><th>Reason</th><th>Status</th></tr>';
+            // Queries the database for the checked areas
             let multi = query(collection(db, "reprints"), where("status", "in", statusCheckboxes()))
+            // Pulls the items based on the query
             getDocs(multi)
             .then((docs) => {
+                // generates a line per item in the stack as html
                 docs.forEach(reprint => {
                     try {
                         let reprintData = reprint.data()
@@ -430,9 +438,11 @@
                         console.error(error);
                     }
                 }); 
+                // places the new items in the DOM
                 stackListContainer.innerHTML = currentStack;
             })
         }
+
       </script>
 </body>
 
