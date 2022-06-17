@@ -390,7 +390,6 @@
             const stackListContainer = document.getElementById("reprint-stack-list");
 
             let currentStack = '<tr><th>#</th><th>Order</th><th>Sku</th><th>Submitter Name</th><th>Reason</th><th>Status</th></tr>';
-            let q = query(collection(db, "reprints"), where("status", "!=", ""));
             let multi = query(collection(db, "reprints"), where("status", "in", statusCheckboxes()))
             getDocs(multi)
             .then((docs) => {
