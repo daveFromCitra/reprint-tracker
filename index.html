@@ -339,6 +339,13 @@
                 }).then(() => {
                     reprintStackUpdate();
                     $("#exampleModal").modal("hide");
+                    document.getElementById("user-name").value = '';
+                    document.getElementById("order-number").value = '';
+                    document.getElementById("item-number").value = '';
+                    document.getElementById("reason").value = '';
+                    document.getElementById("item-quantity-needed").value = '';
+                    document.getElementById("item-quantity-total").value = '';
+                    document.getElementById("item-size").value = '';
                 }
                 )
                 .catch((error) => {
