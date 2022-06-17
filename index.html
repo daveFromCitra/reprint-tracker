@@ -120,7 +120,7 @@
         </div>
         <div class="container-sm" id="reprint-stack">
             <h2>Reprint Stack</h2>
-            <div class="my-2">
+            <div id="filter-boxes" class="my-2">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="requestedCheckbox" value="requested" checked>
                     <label class="form-check-label" for="inlineCheckbox1">Requested</label>
@@ -252,6 +252,11 @@
         })
         // Table Refresh
         document.getElementById("refresh-button").addEventListener("click", function(e) {
+            e.preventDefault();
+            reprintStackUpdate();
+        })
+        // Change filters selected
+        document.getElementById("filter-boxes").addEventListener("change", function(e) {
             e.preventDefault();
             reprintStackUpdate();
         })
@@ -388,7 +393,6 @@
 
         function reprintStackUpdate() {
             const stackListContainer = document.getElementById("reprint-stack-list");
-
             let currentStack = '<tr><th>#</th><th>Order</th><th>Sku</th><th>Submitter Name</th><th>Reason</th><th>Status</th></tr>';
             let multi = query(collection(db, "reprints"), where("status", "in", statusCheckboxes()))
             getDocs(multi)
