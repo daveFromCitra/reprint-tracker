@@ -338,6 +338,7 @@
                     updated: []
                 }).then(() => {
                     reprintStackUpdate();
+                    $("#exampleModal").modal("hide");
                 }
                 )
                 .catch((error) => {
